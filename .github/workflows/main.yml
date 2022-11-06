@@ -1,0 +1,119 @@
+name: Outcomes  
+on: [push]
+jobs:
+  deploy_source:
+    name: Deploy API Using Lambda
+    strategy:
+      matrix:
+        node-version: [12.x]
+    runs-on: ubuntu-latest
+    steps:
+    
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install and build
+        run: |
+          npm ci
+          npm run build --if-present
+        env:
+          CI: true
+
+      - name: /outcomes get lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-g.zip outcomes/get/index.js node_modules
+      - name: outcome get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-g
+            zip_file: m-s-outcomes-g.zip
+      - name: /outcomes post lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-po.zip outcomes/post/index.js node_modules
+      - name: outcome get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-po
+            zip_file: m-s-outcomes-po.zip
+      - name: /outcomes/{outcome_id} get lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-outcome-g.zip outcomes/outcome_id/get/index.js node_modules
+      - name: outcome get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-outcome-g
+            zip_file: m-s-outcomes-outcome-g.zip
+      - name: /outcomes/{outcome_id} put lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-outcome-pu.zip outcomes/outcome_id/put/index.js node_modules
+      - name: outcome get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-outcome-pu
+            zip_file: m-s-outcomes-outcome-pu.zip
+      - name: /outcomes/{outcome_id} delete lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-outcome-d.zip outcomes/outcome_id/delete/index.js node_modules
+      - name: outcome get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-outcome-d
+            zip_file: m-s-outcomes-outcome-d.zip          
+      - name: /outcomes/{outcome_id}/tags get lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-outcome-tags-g.zip outcomes/outcome_id/tags/get/index.js node_modules
+      - name: outcomes get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-outcome-tags-g
+            zip_file: m-s-outcomes-outcome-tags-g.zip
+      - name: /outcomes/{outcome_id}/tags post lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-outcome-tags-po.zip outcomes/outcome_id/tags/post/index.js node_modules
+      - name: outcomes get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-outcome-tags-po
+            zip_file: m-s-outcomes-outcome-tags-po.zip
+      - name: /outcomes/{outcome_id}/tags/{tag_id} delete lambda deploy zip
+        uses: postman-open-technologies/outcomes@main
+        with:
+            args: zip -qq -r m-s-outcomes-outcome-tags-tag-d.zip outcomes/outcome_id/tags/tag_id/delete/index.js node_modules
+      - name: outcomes get lambda deploy
+        uses: appleboy/lambda-action@master
+        with:
+            aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
+            aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+            aws_region: us-west-1
+            function_name: m-s-outcomes-outcome-tags-tag-d
+            zip_file: m-s-outcomes-outcome-tags-tag-d.zip            
